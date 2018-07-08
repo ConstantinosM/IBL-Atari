@@ -14,8 +14,8 @@ class Defaults:
     # ----------------------
     # Experiment Parameters
     # ----------------------
-    STEPS_PER_EPOCH = 10000
-    EPOCHS = 10 #5000
+    STEPS_PER_EPOCH = 5000#10000
+    EPOCHS = 2#10 #5000
     STEPS_PER_TEST = 0
 
     # ----------------------

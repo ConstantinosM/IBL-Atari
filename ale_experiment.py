@@ -11,7 +11,7 @@ import image_preprocessing
 # Number of rows to crop off the bottom of the (downsampled) screen.
 # This is appropriate for breakout, but it may need to be modified
 # for other games.
-CROP_OFFSET = 0# 8
+CROP_OFFSET = 0# 8 # Pacman has also a black ribbon with the scores
 
 
 class ALEExperiment(object):

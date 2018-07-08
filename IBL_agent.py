@@ -38,9 +38,26 @@ class EpisodicControl(object):
             self.epsilon_rate = 0
 
         # CREATE IBL AGENT
-        attrs = OrderedDict({'key' + str(i): i for i in range(0, 63)})
-        self.DM = Agent('DM', attrs.keys())
+        # Older
+        # attrs = OrderedDict({'key' + str(i): i for i in range(0, 63)}) # Maybe 64!
+        # self.DM = Agent('DM', attrs.keys())
+
+        # Newest
+        self.DM = Agent('DM',['state']) # no need to have anything here at the beginning
         self.DM.defaultUtility = 1000 # Instead you can prepopulate with the random initial actions in the while loop in ale_experiment.py
+
+        def eucl(v1, v2):
+            v1 = np.array(v1)
+            v2 = np.array(v2)
+            return np.linalg.norm(v1 - v2)
+        # Init Partial Matching
+        self.DM.similarity('state', eucl)
+        self.DM.mismatchPenalty = 0.5
+        # Create general situation and situationdecision sets. They will be updated later on.
+        self.situation = Situation(state=()) # state attribute is empty TUPLE
+        self.situationdecisions = [SituationDecision(str(action), self.situation) for action in range(self.num_actions)]
+
+        # You might need to pre-populate with few instances
 
         # CREATE A FOLDER TO HOLD RESULTS
         time_str = time.strftime("_%m-%d-%H-%M_", time.gmtime())
@@ -116,17 +133,26 @@ class EpisodicControl(object):
         state = np.dot(self.qec_table.matrix_projection, observation.flatten())
         state = state.ravel()
         state = state.tolist()
-        ii=0; context = {}
-        for jj in state:
-            context['key'+str(ii)]=jj
-            ii=ii+1
+        # convert list to tuple for newest version
+        state = tuple(state)
 
-        sds = {str(action): SituationDecision(str(action)) for action in range(self.num_actions)}
-        for action in range(self.num_actions):
-            sds[str(action)].situation._dict = context
+        # Older version
+        # ii=0; context = {}
+        # for jj in state:
+        #     context['key'+str(ii)]=jj
+        #     ii=ii+1
+        # sds = {str(action): SituationDecision(str(action)) for action in range(self.num_actions)}
+        # for action in range(self.num_actions):
+        #     sds[str(action)].situation._dict = context
+        #
+        # action = self.DM.choose(*sds.values())
 
-        action = self.DM.choose(*sds.values())
-        #return self.rng.randint(0, self.num_actions)
+        #Newest version
+        self.situation['state'] = state
+        action = self.DM.choose(*self.situationdecisions)
+
+        #random actions to compare with random agent
+        #action = self.rng.randint(0, self.num_actions)
 
         # value = -100
         # maximum_action = 0
@@ -194,7 +220,7 @@ class EpisodicControl(object):
             node = self.trace_list.trace_list[i]
             q_return = q_return * self.ec_discount + node.reward # So actually is the sum of the expected reward as q_return starts from 0.
             #self.qec_table.update(node.image, node.action, q_return) # The table gets updated with the discounted return from the trace
-            state = np.dot(self.qec_table.matrix_projection, node.image.flatten())  # Dimensionality reduction with Random Projection (RP)-->21168 to 64
+            #state = np.dot(self.qec_table.matrix_projection, node.image.flatten())  # Dimensionality reduction with Random Projection (RP)-->21168 to 64
             # q_value = self.qec_table.ec_buffer[node.action].peek(state, q_return, modify=True)
             # if q_value == None:
             #     self.qec_table.ec_buffer[node.action].add(state, q_return)
