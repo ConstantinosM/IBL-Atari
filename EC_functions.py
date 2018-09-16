@@ -55,7 +55,7 @@ class LRU_KNN:
             self.states[old_index] = key
             self.q_values[old_index] = value
             self.lru[old_index] = self.tm
-        else:
+        else: # (MINE) Update and expand memory
             self.states[self.curr_capacity] = key
             self.q_values[self.curr_capacity] = value
             self.lru[self.curr_capacity] = self.tm
@@ -132,12 +132,3 @@ class TraceRecorder(object):
     def add_trace(self, observation, action, reward, terminal):
         node = TraceNode(observation, action, reward, terminal)
         self.trace_list.append(node)
-
-
-
-
-
-
-
-
-
