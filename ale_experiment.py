@@ -53,7 +53,7 @@ class ALEExperiment(object):
             self.agent.finish_epoch(epoch)
 
             if self.test_length > 0:
-                self.agent.start_testing()
+                self.agent.start_testing() # There is NO TESTING FUNCTION!!!
                 self.run_epoch(epoch, self.test_length, True)
                 self.agent.finish_testing(epoch)
 
@@ -94,6 +94,7 @@ class ALEExperiment(object):
 
         # Make sure the screen buffer is filled at the beginning of
         # each episode...
+        # MINE Its two actions because the buffer has 2 entries and then the image is summed and actions are repeated
         self._act(0)
         self._act(0)
 

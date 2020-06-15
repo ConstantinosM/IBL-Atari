@@ -77,7 +77,7 @@ class DistanceNode(object):
         self.index = index
 
 class QECTable(object):
-    def __init__(self, knn, state_dimension, projection_type, observation_dimension, buffer_size, num_actions, rng):
+    def __init__(self, knn, state_dimension, projection_type, observation_dimension, buffer_size, num_actions, rng): #  between state and buffer
         self.knn = knn
         self.ec_buffer = []
         self.buffer_maximum_size = buffer_size
@@ -102,9 +102,8 @@ class QECTable(object):
 
     """estimate the value of Q_EC(s,a)  O(N*logK*D)  check existence: O(N) -> KNN: O(D*N*logK)"""
     def estimate(self, s, a):
-        state = np.dot(self.matrix_projection, s.flatten())
-
-        q_value = self.ec_buffer[a].peek(state,None,modify = False)
+        state = np.dot(self.matrix_projection, s.flatten()) # MINE NO PROJECTIONS
+        q_value = self.ec_buffer[a].peek(state,None,modify = False) # MINE find nearest state
         if q_value!=None:
             return q_value
 
